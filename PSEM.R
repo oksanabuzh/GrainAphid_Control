@@ -22,7 +22,7 @@ sessionInfo()
 # [13] readr_2.1.4        tidyr_1.3.0        tibble_3.1.8       ggplot2_3.4.1      tidyverse_2.0.0   
 
 
-# Set up a local working directory
+# local working directory
 path <- here::here()
 path
 
