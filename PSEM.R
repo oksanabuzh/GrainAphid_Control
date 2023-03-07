@@ -1,19 +1,26 @@
-# 04 March 2023
+# 06 March 2023
 
 rm(list=ls(all=TRUE))
 
-# Required packages----
+# Packages----
 library(here)
 library(tidyverse)
-library(lme4)
-library(lmerTest)
 library(ggplot2)
 library(lme4)
 library(lmerTest)
 library(car)
+library(emmeans)
 library(piecewiseSEM)
 
+
 sessionInfo()
+
+# R version 4.2.2 (2022-10-31 ucrt)
+
+# [1] emmeans_1.8.4-1    piecewiseSEM_2.3.0 MASS_7.3-58.1      r2glmm_0.1.2       lmerTest_3.1-3     lme4_1.1-31       
+# [7] Matrix_1.5-1       lubridate_1.9.2    forcats_1.0.0      stringr_1.5.0      dplyr_1.1.0        purrr_1.0.1       
+# [13] readr_2.1.4        tidyr_1.3.0        tibble_3.1.8       ggplot2_3.4.1      tidyverse_2.0.0   
+
 
 # Set up a local working directory
 path <- here::here()
@@ -21,34 +28,15 @@ path
 
 # Data----
 library(tidyverse)
-k.dat<-read_csv ("Data/Data.csv")
+k.dat<-read_csv ("Data/Aphid_Data.csv")
 str(k.dat) 
 names (k.dat)
-# missing data?
+
+# check missing data
 which(is.na(k.dat))
 
 k.dat$Pot <- factor(k.dat$Pot)
-factor(k.dat$Host_diversity)
-factor(k.dat$Predator)
-k.dat$Garlic <- factor(k.dat$Garlic)
-# convert Host_diversity and Predator into categorical variable 
 
-k.dat<- k.dat %>%
-  mutate(Host_diversity_cat = Host_diversity) %>% 
-    mutate(Hst_div = case_when(Host_diversity_cat == 1 ~ "barley alone",
-                              Host_diversity_cat == 3 ~ "barley intercropped")) %>%
-  mutate(Predator_cat = Predator) %>% 
-  mutate(Predtr = case_when(Predator_cat == 0 ~ "absent",
-                             Predator_cat == 1 ~ "present"))
-  
-
-str(k.dat) 
-names(k.dat)
-
-
-
-
-library(nlme)
 
 # Check the relationships
 library(ggplot2)
@@ -79,24 +67,22 @@ car::vif(mm1)
 summary(mm1)
 car::Anova(mm1)
 
-# check in emmeans
-emmeans(mm1, list(pairwise ~ Hst_div))
+# Marginal means and pairwise differences of Hst_div levels
+emmeans::emmeans(mm1, list(pairwise ~ Hst_div))
 
 # check in psem
 summary(piecewiseSEM::psem(mm1))
 
 #  model R2
-library(MuMIn)
-r.squaredGLMM(mm1)
+MuMIn::r.squaredGLMM(mm1)
 # R2m and R2c are marginal (for fixed predictors) and conditional (for fixed and random predictors) coefficients of determination
 
 # Partial R2 for fixed effects
 library(r2glmm)
-# library(splines)
 R2part_mm1 <- r2beta(mm1, method = 'nsj', partial = T, data = k.dat)
 R2part_mm1
 
-## Abundance-----
+## Aphid density-----
 mm2 <- glmer(Aphid_Number ~ Hst_div + Plant_weight + Predtr  + 
                     Garlic_weight + (1|Pot), data = k.dat, 
              family = "poisson") 
@@ -116,7 +102,6 @@ qqline(resid(mm2))
 resid_pearson <- residuals(mm2, type = "pearson")
 SSQ <- sum(resid_pearson^2)
 SSQ/df.residual(mm2) 
-
 # [1] 3.404141 -> clear overdispersion
 
 # change family
@@ -138,10 +123,10 @@ car::vif(mm2b)
 summary(mm2b)
 car::Anova(mm2b)
 
-# check in emmeans
-library(emmeans)
-emmeans(mm2b, specs = "Hst_div")
-emmeans(mm2b, list(pairwise ~ Hst_div))
+# Marginal means and pairwise differences of Hst_div levels and of Predtr levels
+
+emmeans::emmeans(mm2b, list(pairwise ~ Hst_div, 
+                            pairwise ~ Predtr))
 
 # check in psem
 summary(piecewiseSEM::psem(mm2b), standardize = "scale", standardize.type = "Menard.OE")
@@ -156,7 +141,7 @@ MuMIn::r.squaredGLMM(mm2b)
 # Only the SGV method is compatible with glmmPQL object
 R2part <- r2glmm::r2beta(mm2b, method = 'SGV', partial = T, data = k.dat)
 
-# plot partial R2
+# plot the partial R2
 
 R2<- R2part %>% 
   filter(Effect!="Model") %>% 
@@ -200,7 +185,7 @@ geom_bar(position="stack", stat="identity", colour = col, fill=fill)+
 ###############################-
 
 # Structural equation model:----
-
+library(piecewiseSEM)
 psem_model <- psem (mm1, mm2b)
 
 # Model fit:
@@ -239,7 +224,7 @@ write_csv(unstdCoefs(psem_model), file="coefs.csv")
 
 # Supplementary ----
 ## Fig S1.A----
-# Effects of plant species on plant weight
+# Effects of plant species on plant mass
 
 mS1 <-lmer(Plant_weight~Plant +(1|Pot), data = k.dat) 
 
@@ -251,6 +236,7 @@ qqline(resid(mS1))
 summary(mS1)
 car::Anova(mS1)
 
+# Marginal means and pairwise differences of Plant species
 emmeans::emmeans(mS1, list(pairwise ~ Plant))
 
 ggplot(k.dat, aes(y=Plant_weight, x=Plant)) + 
@@ -268,7 +254,7 @@ ggplot(k.dat, aes(y=Plant_weight, x=Plant)) +
 
 
 ## Fig S1.B----
-# Effects of plant species on aphid densities
+# Effects of plant species on aphid density
 
 mS2 <- glmer(Aphid_Number ~ Plant +   Predtr  + 
                Garlic_weight + (1|Pot), data = k.dat, 
@@ -310,9 +296,8 @@ car::vif(mS2b)
 summary(mS2b)
 car::Anova(mS2b)
 
-# check in emmeans
-library(emmeans)
-emmeans(mS2b, list(pairwise ~ Plant))
+# Marginal means and pairwise differences of Plant species
+emmeans::emmeans(mS2b, list(pairwise ~ Plant))
 
 
 ggplot(k.dat, aes(y=Aphid_Number, x=Plant)) + 
@@ -325,3 +310,5 @@ ggplot(k.dat, aes(y=Aphid_Number, x=Plant)) +
         axis.line = element_line(colour = "black"),
         axis.ticks =  element_line(colour = "black"))
 
+
+#End
