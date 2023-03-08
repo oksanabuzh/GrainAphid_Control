@@ -1,4 +1,4 @@
-# 06 March 2023
+# 08 March 2023
 
 rm(list=ls(all=TRUE))
 
@@ -11,6 +11,7 @@ library(lmerTest)
 library(car)
 library(emmeans)
 library(piecewiseSEM)
+library(multcomp)
 
 
 sessionInfo()
@@ -69,6 +70,12 @@ car::Anova(mm1)
 
 # Marginal means and pairwise differences of Hst_div levels
 emmeans::emmeans(mm1, list(pairwise ~ Hst_div))
+# to add letters for the post-hoc test:
+library(multcomp)
+library(emmeans)
+cld(emmeans(mm1, list(pairwise ~ Hst_div)),  
+    #  type="response",
+    Letters = letters, adjust = "none")
 
 # check in psem
 summary(piecewiseSEM::psem(mm1))
@@ -127,6 +134,11 @@ car::Anova(mm2b)
 
 emmeans::emmeans(mm2b, list(pairwise ~ Hst_div, 
                             pairwise ~ Predtr))
+# to add letters for post-hoc test:
+cld(emmeans(mm2b, list(pairwise ~ Hst_div, 
+                       pairwise ~ Predtr)),  
+    #  type="response",
+    Letters = letters, adjust = "none")
 
 # check in psem
 summary(piecewiseSEM::psem(mm2b), standardize = "scale", standardize.type = "Menard.OE")
