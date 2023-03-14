@@ -200,6 +200,11 @@ geom_bar(position="stack", stat="identity", colour = col, fill=fill)+
 library(piecewiseSEM)
 psem_model <- psem (mm1, mm2b)
 
+# Testing missing links by D-separation test
+
+dSep(psem_model, .progressBar = FALSE)
+
+
 # Model fit:
 
 # Fisher’s C statistic
