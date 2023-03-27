@@ -135,7 +135,7 @@ car::Anova(mm2b)
 emmeans::emmeans(mm2b, list(pairwise ~ Hst_div, 
                             pairwise ~ Predtr))
 # to add letters for post-hoc test:
-cld(emmeans(mm2b, list(pairwise ~ Hst_div, 
+multcomp::cld(emmeans::emmeans(mm2b, list(pairwise ~ Hst_div, 
                        pairwise ~ Predtr)),  
     #  type="response",
     Letters = letters, adjust = "none")
