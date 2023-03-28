@@ -1,4 +1,4 @@
-# 14 March 2023
+# 28 March 2023
 
 rm(list=ls(all=TRUE))
 
@@ -236,6 +236,51 @@ path
 write_csv(unstdCoefs(psem_model), file="coefs.csv")
 
 
+#################################################-
+
+# Figure 3 ----
+## effects of treatment
+
+mm3 <- glmer(Aphid_Number ~ Treatment_general + Plant_weight + (1|Pot), data = k.dat, 
+            family = "poisson") 
+
+plot(mm3)
+qqnorm(resid(mm3))
+qqline(resid(mm3))
+
+# check overdispersion
+resid_pearson <- residuals(mm3, type = "pearson")
+SSQ <- sum(resid_pearson^2)
+SSQ/df.residual(mm2) 
+
+
+# change family
+library(MASS)
+
+mm3b <- glmmPQL(Aphid_Number ~ Treatment_general + Plant_weight , 
+                random = ~ 1 | Pot,  data = k.dat,
+                family = "quasipoisson") 
+
+
+
+plot(mm3b)
+qqnorm(resid(mm3b))
+qqline(resid(mm3b))
+
+
+# estimates
+summary(mm3b)
+car::Anova(mm3b)
+
+# Marginal means and pairwise differences of Hst_div levels and of Predtr levels
+
+emmeans::emmeans(mm3b, list(pairwise ~ Treatment_general  ))
+# to add letters for post-hoc test:
+multcomp::cld(emmeans::emmeans(mm3b, list(pairwise ~ Treatment_general)),  
+              #  type="response",
+              Letters = letters, adjust = "none")
+
+
 
 #################################################-
 
@@ -326,6 +371,7 @@ ggplot(k.dat, aes(y=Aphid_Number, x=Plant)) +
         axis.title=element_text(size=15),
         axis.line = element_line(colour = "black"),
         axis.ticks =  element_line(colour = "black"))
+
 
 
 #End
