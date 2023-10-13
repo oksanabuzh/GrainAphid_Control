@@ -240,6 +240,24 @@ write_csv(unstdCoefs(psem_model), file="coefs.csv")
 
 # Figure 3 ----
 ## effects of treatment
+k.dat$Treatment_specific
+
+mean.data <-k.dat %>% 
+  group_by(Treatment_general,Pot) %>% 
+  summarise(Aphid_Number=mean(Aphid_Number))
+
+
+m <- lm(log(Aphid_Number) ~ Treatment_general, data = mean.data) 
+summary(m)
+anova(m)
+plot(m)
+
+emmeans::emmeans(m, list(pairwise ~ Treatment_general))
+# to add letters for post-hoc test:
+multcomp::cld(emmeans::emmeans(m, list(pairwise ~ Treatment_general)),  
+              #  type="response",
+              Letters = letters, adjust = "none")
+
 
 mm3 <- glmer(Aphid_Number ~ Treatment_general + Plant_weight + (1|Pot), data = k.dat, 
             family = "poisson") 
@@ -257,7 +275,8 @@ SSQ/df.residual(mm2)
 # change family
 library(MASS)
 
-mm3b <- glmmPQL(Aphid_Number ~ Treatment_general + Plant_weight , 
+mm3b <- glmmPQL(Aphid_Number ~ Treatment_general  + Plant_weight
+                , 
                 random = ~ 1 | Pot,  data = k.dat,
                 family = "quasipoisson") 
 
@@ -276,9 +295,50 @@ car::Anova(mm3b)
 
 emmeans::emmeans(mm3b, list(pairwise ~ Treatment_general  ))
 # to add letters for post-hoc test:
-multcomp::cld(emmeans::emmeans(mm3b, list(pairwise ~ Treatment_general)),  
+fig1_emmeans <-multcomp::cld(emmeans::emmeans(mm3b, list(pairwise ~ Treatment_general)),  
               #  type="response",
               Letters = letters, adjust = "none")
+
+
+fig1_emmeans <- fig1_emmeans[order(fig1_emmeans$Treatment_general), ]
+fig1_emmeans
+
+
+
+fig1_summarized = k.dat %>% 
+  group_by(Treatment_general, Group) %>% 
+  summarize(Max.Aphid_Number=max(Aphid_Number),
+            mean=mean(Aphid_Number),
+            sd=sd(Aphid_Number),
+            se = sd(Aphid_Number, na.rm = T)/sqrt(length(Aphid_Number))) 
+
+fig1_summarized
+
+
+ggplot(fig1_summarized, aes(y=mean, x=Treatment_general, fill=Group), col="black") + 
+  geom_bar(stat="identity", position=position_dodge(), col="black") +
+  geom_errorbar(aes(ymin=mean-se, ymax=mean+se), width=.2,
+                position=position_dodge(.9))+
+  geom_text(data=fig1_summarized,aes(x=Treatment_general,y=0.5+mean+se,
+                                       label=fig1_emmeans$.group),vjust=0, size=5)+
+ 
+ # geom_point(data=fig1_emmeans, aes(y=emmean, x=Treatment_general),
+ #            shape = 23, color = "black", fill="blue",  size=3) +
+  
+  labs(x =" ", y="Aphid density") +
+  scale_fill_brewer(palette="Pastel2") +
+  theme_bw()+
+  theme(axis.text.y=element_text(colour = "black", size=13),
+        axis.text.x=element_text(colour = "black", size=13),
+        axis.title=element_text(size=15),
+        axis.line = element_line(colour = "black"),
+        axis.ticks =  element_line(colour = "black"),
+        legend.position="none")
+
+
+
+
+
 
 
 
@@ -301,11 +361,35 @@ car::Anova(mS1)
 # Marginal means and pairwise differences of Plant species
 emmeans::emmeans(mS1, list(pairwise ~ Plant))
 
+figS1A_emmeans <- multcomp::cld(emmeans::emmeans(mS1, list(pairwise ~ Plant)),  
+                                #  type="response",
+                                Letters = letters, adjust = "none")
+
+figS1A_emmeans <- figS1A_emmeans[order(figS1A_emmeans$Plant), ]
+figS1A_emmeans
+
+
+figS1A_summarized = k.dat %>% 
+  group_by(Plant) %>% 
+  summarize(Max.Plant_weight=max(Plant_weight),
+            Mean.Plant_weight=mean(Plant_weight))
+
+
 ggplot(k.dat, aes(y=Plant_weight, x=Plant)) + 
-  geom_boxplot() +
-  #  ylab(bquote('Explained variance (partial R'^'2'*')'))+
-  #ylab(bquote('Plant mass, kg'^'2'))+
+  geom_boxplot(outlier.shape=NA)+
+  geom_text(data=figS1A_summarized,aes(x=Plant,y=0.002+Max.Plant_weight,
+                                      label=figS1A_emmeans$.group),vjust=0, , size=5)+
+  geom_jitter(data = k.dat, aes(y = Plant_weight, x = Plant),
+    alpha = 0.2,width = 0.2) +
+  geom_point(data=figS1A_summarized, aes(y=Mean.Plant_weight, x=Plant),  
+             position = position_nudge(x=0.1),
+             shape = 23, color = "black", fill="red", size=3) +
+  geom_point(data=figS1A_emmeans, aes(y=emmean, x=Plant), 
+             position = position_nudge(x=-0.1),
+             shape = 23, color = "black", fill="blue",  size=3) +
+  
   labs(x ="Plant species", y="Plant mass, g") +
+  ylim(0.01, 0.07)+
   theme_bw()+
   theme(axis.text.y=element_text(colour = "black", size=13),
         axis.text.x=element_text(colour = "black", size=13),
@@ -342,8 +426,7 @@ SSQ/df.residual(mS2)
 # change family
 library(MASS)
 
-mS2b <- glmmPQL(Aphid_Number ~ Plant +   Predtr  + 
-                  Garlic_weight  , 
+mS2b <- glmmPQL(Aphid_Number ~ Plant  +   Predtr  +  Garlic_weight, 
                 random = ~ 1 | Pot,  data = k.dat,
                 family = "quasipoisson") 
 
@@ -361,9 +444,84 @@ car::Anova(mS2b)
 # Marginal means and pairwise differences of Plant species
 emmeans::emmeans(mS2b, list(pairwise ~ Plant))
 
+figS1B_emmeans <- multcomp::cld(emmeans::emmeans(mS2b, list(pairwise ~ Plant)),  
+              #  type="response",
+              Letters = letters, adjust = "none")
 
-ggplot(k.dat, aes(y=Aphid_Number, x=Plant)) + 
-  geom_boxplot() +
+figS1B_emmeans <- figS1B_emmeans[order(figS1B_emmeans$Plant), ]
+figS1B_emmeans
+
+
+figS1B.summarized = k.dat %>% 
+  group_by(Plant) %>% 
+  summarize(Max.Aphid_Number=max(Aphid_Number),
+            Mean.Aphid_Number=mean(Aphid_Number))
+
+
+ 
+  
+ggplot(k.dat, aes(x=Plant,y=Aphid_Number)) + 
+  geom_boxplot(outlier.shape=NA)+
+  geom_text(data=figS1B.summarized,aes(x=Plant,y=3+Max.Aphid_Number,
+                                     label=figS1B_emmeans$.group),vjust=0, , size=5)+
+  geom_jitter(data = k.dat, aes(y = Aphid_Number, x = Plant),
+              alpha = 0.2,width = 0.2) +
+  geom_point(data=figS1B.summarized, aes(y=Mean.Aphid_Number, x=Plant), 
+             position = position_nudge(x=0.1),
+             shape = 23, color = "black", fill="red", , size=3) +
+  geom_point(data=figS1B_emmeans, aes(y=emmean, x=Plant), 
+             position = position_nudge(x=-0.1),
+             shape = 23, color = "black", fill="blue",  size=3) +
+  
+  labs(x ="Plant species", y="Aphid density") +
+  ylim(0, 65)+
+    theme_bw()+
+  theme(axis.text.y=element_text(colour = "black", size=13),
+        axis.text.x=element_text(colour = "black", size=13),
+        axis.title=element_text(size=15),
+        axis.line = element_line(colour = "black"),
+        axis.ticks =  element_line(colour = "black"))
+
+
+
+# Figure option by Julian
+
+k.dat_fig_S1B <- k.dat %>% 
+  group_by(Plant) %>% 
+  summarise(mean = mean(Aphid_Number, na.rm = T),
+            sd = sd(Aphid_Number, na.rm = T),
+            se = sd(Aphid_Number, na.rm = T)/sqrt(length(Aphid_Number)))
+
+
+k.dat_fig_S1B$group <- figS1B_emmeans$.group
+k.dat_fig_S1B$emmean <- figS1B_emmeans$emmean
+k.dat_fig_S1B$lower.CL <- figS1B_emmeans$lower.CL
+k.dat_fig_S1B$upper.CL <- figS1B_emmeans$upper.CL
+
+
+
+ggplot(k.dat_fig_S1B, aes(y=mean, x=Plant)) + 
+  geom_jitter(
+    data = k.dat,
+    aes(y = Aphid_Number, x = Plant),
+  #  shape = 16,
+    alpha = 0.2,
+    width = 0.2
+  ) +
+  geom_point(shape = 16, size=3) +
+  geom_pointrange(aes(ymin=mean-sd, ymax=mean+sd), fatten = 3)+
+  geom_point(aes(y=emmean, x=Plant), shape = 23, color = "black", fill="blue", , size=3) +
+     geom_text(
+    data = k.dat_fig_S1B,
+    aes(
+      y = mean,
+      x = Plant,
+      label = str_trim(group)
+    ),
+    position = position_nudge(x = 0.1),
+    hjust = 0,
+    color = "black"
+  ) +
    labs(x ="Plant species", y="Aphid density") +
   theme_bw()+
   theme(axis.text.y=element_text(colour = "black", size=13),
@@ -371,7 +529,6 @@ ggplot(k.dat, aes(y=Aphid_Number, x=Plant)) +
         axis.title=element_text(size=15),
         axis.line = element_line(colour = "black"),
         axis.ticks =  element_line(colour = "black"))
-
 
 
 #End

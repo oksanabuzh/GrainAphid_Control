@@ -1,121 +1,121 @@
-Treatment_specific,Treatment_general,Pot,Plant,Plant_N,Aphid_Number,Plant_weight,Garlic,Garlic_weight,Hst_div,Predtr
-barley_mono_aphid,mono,1,barley,1,8,0.021,absent,0,barley alone,absent
-barley_mono_aphid,mono,1,barley,2,55,0.033,absent,0,barley alone,absent
-barley_mono_aphid,mono,1,barley,3,40,0.029,absent,0,barley alone,absent
-barley_mono_aphid,mono,2,barley,4,15,0.012,absent,0,barley alone,absent
-barley_mono_aphid,mono,2,barley,5,12,0.017,absent,0,barley alone,absent
-barley_mono_aphid,mono,2,barley,6,17,0.04,absent,0,barley alone,absent
-barley_mono_aphid,mono,3,barley,7,38,0.026,absent,0,barley alone,absent
-barley_mono_aphid,mono,3,barley,8,24,0.046,absent,0,barley alone,absent
-barley_mono_aphid,mono,3,barley,9,37,0.06,absent,0,barley alone,absent
-barley_mono_aphid,mono,4,barley,10,1,0.024,absent,0,barley alone,absent
-barley_mono_aphid,mono,4,barley,11,42,0.042,absent,0,barley alone,absent
-barley_mono_aphid,mono,4,barley,12,16,0.03,absent,0,barley alone,absent
-barley_mono_aphid,mono,5,barley,13,27,0.033,absent,0,barley alone,absent
-barley_mono_aphid,mono,5,barley,14,19,0.029,absent,0,barley alone,absent
-barley_mono_aphid,mono,5,barley,15,21,0.03,absent,0,barley alone,absent
-barley_mono_aphid_garlic,mono_garlic,6,barley,16,28,0.033,present,0.14,barley alone,absent
-barley_mono_aphid_garlic,mono_garlic,6,barley,17,48,0.042,present,0.14,barley alone,absent
-barley_mono_aphid_garlic,mono_garlic,6,barley,18,23,0.036,present,0.14,barley alone,absent
-barley_mono_aphid_garlic,mono_garlic,7,barley,19,6,0.004,present,0.336,barley alone,absent
-barley_mono_aphid_garlic,mono_garlic,7,barley,20,52,0.037,present,0.336,barley alone,absent
-barley_mono_aphid_garlic,mono_garlic,7,barley,21,25,0.037,present,0.336,barley alone,absent
-barley_mono_aphid_garlic,mono_garlic,8,barley,22,31,0.028,present,0.793,barley alone,absent
-barley_mono_aphid_garlic,mono_garlic,8,barley,23,14,0.034,present,0.793,barley alone,absent
-barley_mono_aphid_garlic,mono_garlic,8,barley,24,34,0.035,present,0.793,barley alone,absent
-barley_mono_aphid_garlic,mono_garlic,9,barley,25,11,0.051,present,0.872,barley alone,absent
-barley_mono_aphid_garlic,mono_garlic,9,barley,26,6,0.03,present,0.872,barley alone,absent
-barley_mono_aphid_garlic,mono_garlic,9,barley,27,7,0.035,present,0.872,barley alone,absent
-barley_mono_aphid_garlic,mono_garlic,10,barley,28,16,0.032,present,0.559,barley alone,absent
-barley_mono_aphid_garlic,mono_garlic,10,barley,29,2,0.027,present,0.559,barley alone,absent
-barley_mono_aphid_garlic,mono_garlic,10,barley,30,6,0.012,present,0.559,barley alone,absent
-poli__aphid,poli,11,barley,31,7,0.03,absent,0,barley intercropped,absent
-poli__aphid,poli,11,wheat,32,35,0.033,absent,0,barley intercropped,absent
-poli__aphid,poli,11,rye,33,13,0.029,absent,0,barley intercropped,absent
-poli__aphid,poli,12,barley,34,46,0.039,absent,0,barley intercropped,absent
-poli__aphid,poli,12,wheat,35,54,0.052,absent,0,barley intercropped,absent
-poli__aphid,poli,12,rye,36,37,0.031,absent,0,barley intercropped,absent
-poli__aphid,poli,13,barley,37,59,0.054,absent,0,barley intercropped,absent
-poli__aphid,poli,13,wheat,38,5,0.036,absent,0,barley intercropped,absent
-poli__aphid,poli,13,rye,39,25,0.023,absent,0,barley intercropped,absent
-poli__aphid,poli,14,barley,40,12,0.037,absent,0,barley intercropped,absent
-poli__aphid,poli,14,wheat,41,5,0.039,absent,0,barley intercropped,absent
-poli__aphid,poli,14,rye,42,28,0.034,absent,0,barley intercropped,absent
-poli__aphid,poli,15,barley,43,29,0.042,absent,0,barley intercropped,absent
-poli__aphid,poli,15,wheat,44,9,0.052,absent,0,barley intercropped,absent
-poli__aphid,poli,15,rye,45,33,0.032,absent,0,barley intercropped,absent
-poli__aphid_garlic,poli_garlic,16,barley,46,5,0.028,present,0.46,barley intercropped,absent
-poli__aphid_garlic,poli_garlic,16,wheat,47,32,0.032,present,0.46,barley intercropped,absent
-poli__aphid_garlic,poli_garlic,16,rye,48,10,0.029,present,0.46,barley intercropped,absent
-poli__aphid_garlic,poli_garlic,17,barley,49,43,0.037,present,0.141,barley intercropped,absent
-poli__aphid_garlic,poli_garlic,17,wheat,50,45,0.049,present,0.141,barley intercropped,absent
-poli__aphid_garlic,poli_garlic,17,rye,51,39,0.032,present,0.141,barley intercropped,absent
-poli__aphid_garlic,poli_garlic,18,barley,52,57,0.045,present,0.3,barley intercropped,absent
-poli__aphid_garlic,poli_garlic,18,wheat,53,5,0.032,present,0.3,barley intercropped,absent
-poli__aphid_garlic,poli_garlic,18,rye,54,20,0.02,present,0.3,barley intercropped,absent
-poli__aphid_garlic,poli_garlic,19,barley,55,12,0.035,present,0.47,barley intercropped,absent
-poli__aphid_garlic,poli_garlic,19,wheat,56,7,0.032,present,0.47,barley intercropped,absent
-poli__aphid_garlic,poli_garlic,19,rye,57,15,0.036,present,0.47,barley intercropped,absent
-poli__aphid_garlic,poli_garlic,20,barley,58,31,0.044,present,0.5,barley intercropped,absent
-poli__aphid_garlic,poli_garlic,20,wheat,59,6,0.022,present,0.5,barley intercropped,absent
-poli__aphid_garlic,poli_garlic,20,rye,60,21,0.0269,present,0.5,barley intercropped,absent
-barley_mono_aphid_predator,mono_predator,21,barley,61,3,0.021,absent,0,barley alone,present
-barley_mono_aphid_predator,mono_predator,21,barley,62,22,0.034,absent,0,barley alone,present
-barley_mono_aphid_predator,mono_predator,21,barley,63,22,0.054,absent,0,barley alone,present
-barley_mono_aphid_predator,mono_predator,22,barley,64,21,0.036,absent,0,barley alone,present
-barley_mono_aphid_predator,mono_predator,22,barley,65,7,0.03,absent,0,barley alone,present
-barley_mono_aphid_predator,mono_predator,22,barley,66,2,0.011,absent,0,barley alone,present
-barley_mono_aphid_predator,mono_predator,23,barley,67,2,0.02,absent,0,barley alone,present
-barley_mono_aphid_predator,mono_predator,23,barley,68,3,0.027,absent,0,barley alone,present
-barley_mono_aphid_predator,mono_predator,23,barley,69,22,0.038,absent,0,barley alone,present
-barley_mono_aphid_predator,mono_predator,24,barley,70,5,0.028,absent,0,barley alone,present
-barley_mono_aphid_predator,mono_predator,24,barley,71,17,0.032,absent,0,barley alone,present
-barley_mono_aphid_predator,mono_predator,24,barley,72,17,0.032,absent,0,barley alone,present
-barley_mono_aphid_predator,mono_predator,25,barley,73,19,0.042,absent,0,barley alone,present
-barley_mono_aphid_predator,mono_predator,25,barley,74,10,0.031,absent,0,barley alone,present
-barley_mono_aphid_predator,mono_predator,25,barley,75,22,0.039,absent,0,barley alone,present
-barley_mono_aphid_predator_garlic,mono_predator_garlic,26,barley,76,8,0.04,present,0.569,barley alone,present
-barley_mono_aphid_predator_garlic,mono_predator_garlic,26,barley,77,9,0.036,present,0.569,barley alone,present
-barley_mono_aphid_predator_garlic,mono_predator_garlic,26,barley,78,8,0.034,present,0.569,barley alone,present
-barley_mono_aphid_predator_garlic,mono_predator_garlic,27,barley,79,4,0.025,present,0.273,barley alone,present
-barley_mono_aphid_predator_garlic,mono_predator_garlic,27,barley,80,5,0.029,present,0.273,barley alone,present
-barley_mono_aphid_predator_garlic,mono_predator_garlic,27,barley,81,4,0.018,present,0.273,barley alone,present
-barley_mono_aphid_predator_garlic,mono_predator_garlic,28,barley,82,11,0.041,present,0.609,barley alone,present
-barley_mono_aphid_predator_garlic,mono_predator_garlic,28,barley,83,6,0.035,present,0.609,barley alone,present
-barley_mono_aphid_predator_garlic,mono_predator_garlic,28,barley,84,20,0.05,present,0.609,barley alone,present
-barley_mono_aphid_predator_garlic,mono_predator_garlic,29,barley,85,3,0.03,present,0.495,barley alone,present
-barley_mono_aphid_predator_garlic,mono_predator_garlic,29,barley,86,17,0.044,present,0.495,barley alone,present
-barley_mono_aphid_predator_garlic,mono_predator_garlic,29,barley,87,3,0.023,present,0.495,barley alone,present
-barley_mono_aphid_predator_garlic,mono_predator_garlic,30,barley,88,4,0.024,present,0.214,barley alone,present
-barley_mono_aphid_predator_garlic,mono_predator_garlic,30,barley,89,0,0.017,present,0.214,barley alone,present
-barley_mono_aphid_predator_garlic,mono_predator_garlic,30,barley,90,2,0.022,present,0.214,barley alone,present
-poli__aphid_predator,poli_predator,31,barley,91,11,0.031,absent,0,barley intercropped,present
-poli__aphid_predator,poli_predator,31,wheat,92,4,0.029,absent,0,barley intercropped,present
-poli__aphid_predator,poli_predator,31,rye,93,20,0.042,absent,0,barley intercropped,present
-poli__aphid_predator,poli_predator,32,barley,94,3,0.022,absent,0,barley intercropped,present
-poli__aphid_predator,poli_predator,32,wheat,95,11,0.032,absent,0,barley intercropped,present
-poli__aphid_predator,poli_predator,32,rye,96,19,0.041,absent,0,barley intercropped,present
-poli__aphid_predator,poli_predator,33,barley,97,11,0.035,absent,0,barley intercropped,present
-poli__aphid_predator,poli_predator,33,wheat,98,21,0.045,absent,0,barley intercropped,present
-poli__aphid_predator,poli_predator,33,rye,99,4,0.024,absent,0,barley intercropped,present
-poli__aphid_predator,poli_predator,34,barley,100,34,0.063,absent,0,barley intercropped,present
-poli__aphid_predator,poli_predator,34,wheat,101,21,0.041,absent,0,barley intercropped,present
-poli__aphid_predator,poli_predator,34,rye,102,15,0.037,absent,0,barley intercropped,present
-poli__aphid_predator,poli_predator,35,barley,103,25,0.047,absent,0,barley intercropped,present
-poli__aphid_predator,poli_predator,35,wheat,104,21,0.049,absent,0,barley intercropped,present
-poli__aphid_predator,poli_predator,35,rye,105,4,0.027,absent,0,barley intercropped,present
-poli__aphid_predator_garlic,poli_predator_garlic,36,barley,106,7,0.034,present,0.312,barley intercropped,present
-poli__aphid_predator_garlic,poli_predator_garlic,36,wheat,107,4,0.032,present,0.312,barley intercropped,present
-poli__aphid_predator_garlic,poli_predator_garlic,36,rye,108,9,0.034,present,0.312,barley intercropped,present
-poli__aphid_predator_garlic,poli_predator_garlic,37,barley,109,9,0.034,present,0.456,barley intercropped,present
-poli__aphid_predator_garlic,poli_predator_garlic,37,wheat,110,26,0.054,present,0.456,barley intercropped,present
-poli__aphid_predator_garlic,poli_predator_garlic,37,rye,111,14,0.034,present,0.456,barley intercropped,present
-poli__aphid_predator_garlic,poli_predator_garlic,38,barley,112,15,0.039,present,0.406,barley intercropped,present
-poli__aphid_predator_garlic,poli_predator_garlic,38,wheat,113,25,0.058,present,0.406,barley intercropped,present
-poli__aphid_predator_garlic,poli_predator_garlic,38,rye,114,1,0.031,present,0.406,barley intercropped,present
-poli__aphid_predator_garlic,poli_predator_garlic,39,barley,115,15,0.038,present,0.342,barley intercropped,present
-poli__aphid_predator_garlic,poli_predator_garlic,39,wheat,116,2,0.03,present,0.342,barley intercropped,present
-poli__aphid_predator_garlic,poli_predator_garlic,39,rye,117,4,0.033,present,0.342,barley intercropped,present
-poli__aphid_predator_garlic,poli_predator_garlic,40,barley,118,6,0.031,present,0.391,barley intercropped,present
-poli__aphid_predator_garlic,poli_predator_garlic,40,wheat,119,16,0.047,present,0.391,barley intercropped,present
-poli__aphid_predator_garlic,poli_predator_garlic,40,rye,120,11,0.034,present,0.391,barley intercropped,present
+Treatment_specific,Treatment_general,Group,Pot,Plant,Plant_N,Aphid_Number,Plant_weight,Garlic,Garlic_weight,Hst_div,Predtr
+barley_mono_aphid,mono,aphid alone,1,barley,1,8,0.021,absent,0,barley alone,absent
+barley_mono_aphid,mono,aphid alone,1,barley,2,55,0.033,absent,0,barley alone,absent
+barley_mono_aphid,mono,aphid alone,1,barley,3,40,0.029,absent,0,barley alone,absent
+barley_mono_aphid,mono,aphid alone,2,barley,4,15,0.012,absent,0,barley alone,absent
+barley_mono_aphid,mono,aphid alone,2,barley,5,12,0.017,absent,0,barley alone,absent
+barley_mono_aphid,mono,aphid alone,2,barley,6,17,0.04,absent,0,barley alone,absent
+barley_mono_aphid,mono,aphid alone,3,barley,7,38,0.026,absent,0,barley alone,absent
+barley_mono_aphid,mono,aphid alone,3,barley,8,24,0.046,absent,0,barley alone,absent
+barley_mono_aphid,mono,aphid alone,3,barley,9,37,0.06,absent,0,barley alone,absent
+barley_mono_aphid,mono,aphid alone,4,barley,10,1,0.024,absent,0,barley alone,absent
+barley_mono_aphid,mono,aphid alone,4,barley,11,42,0.042,absent,0,barley alone,absent
+barley_mono_aphid,mono,aphid alone,4,barley,12,16,0.03,absent,0,barley alone,absent
+barley_mono_aphid,mono,aphid alone,5,barley,13,27,0.033,absent,0,barley alone,absent
+barley_mono_aphid,mono,aphid alone,5,barley,14,19,0.029,absent,0,barley alone,absent
+barley_mono_aphid,mono,aphid alone,5,barley,15,21,0.03,absent,0,barley alone,absent
+barley_mono_aphid_garlic,mono_garlic,garlic,6,barley,16,28,0.033,present,0.14,barley alone,absent
+barley_mono_aphid_garlic,mono_garlic,garlic,6,barley,17,48,0.042,present,0.14,barley alone,absent
+barley_mono_aphid_garlic,mono_garlic,garlic,6,barley,18,23,0.036,present,0.14,barley alone,absent
+barley_mono_aphid_garlic,mono_garlic,garlic,7,barley,19,6,0.004,present,0.336,barley alone,absent
+barley_mono_aphid_garlic,mono_garlic,garlic,7,barley,20,52,0.037,present,0.336,barley alone,absent
+barley_mono_aphid_garlic,mono_garlic,garlic,7,barley,21,25,0.037,present,0.336,barley alone,absent
+barley_mono_aphid_garlic,mono_garlic,garlic,8,barley,22,31,0.028,present,0.793,barley alone,absent
+barley_mono_aphid_garlic,mono_garlic,garlic,8,barley,23,14,0.034,present,0.793,barley alone,absent
+barley_mono_aphid_garlic,mono_garlic,garlic,8,barley,24,34,0.035,present,0.793,barley alone,absent
+barley_mono_aphid_garlic,mono_garlic,garlic,9,barley,25,11,0.051,present,0.872,barley alone,absent
+barley_mono_aphid_garlic,mono_garlic,garlic,9,barley,26,6,0.03,present,0.872,barley alone,absent
+barley_mono_aphid_garlic,mono_garlic,garlic,9,barley,27,7,0.035,present,0.872,barley alone,absent
+barley_mono_aphid_garlic,mono_garlic,garlic,10,barley,28,16,0.032,present,0.559,barley alone,absent
+barley_mono_aphid_garlic,mono_garlic,garlic,10,barley,29,2,0.027,present,0.559,barley alone,absent
+barley_mono_aphid_garlic,mono_garlic,garlic,10,barley,30,6,0.012,present,0.559,barley alone,absent
+poli__aphid,poli,aphid alone,11,barley,31,7,0.03,absent,0,barley intercropped,absent
+poli__aphid,poli,aphid alone,11,wheat,32,35,0.033,absent,0,barley intercropped,absent
+poli__aphid,poli,aphid alone,11,rye,33,13,0.029,absent,0,barley intercropped,absent
+poli__aphid,poli,aphid alone,12,barley,34,46,0.039,absent,0,barley intercropped,absent
+poli__aphid,poli,aphid alone,12,wheat,35,54,0.052,absent,0,barley intercropped,absent
+poli__aphid,poli,aphid alone,12,rye,36,37,0.031,absent,0,barley intercropped,absent
+poli__aphid,poli,aphid alone,13,barley,37,59,0.054,absent,0,barley intercropped,absent
+poli__aphid,poli,aphid alone,13,wheat,38,5,0.036,absent,0,barley intercropped,absent
+poli__aphid,poli,aphid alone,13,rye,39,25,0.023,absent,0,barley intercropped,absent
+poli__aphid,poli,aphid alone,14,barley,40,12,0.037,absent,0,barley intercropped,absent
+poli__aphid,poli,aphid alone,14,wheat,41,5,0.039,absent,0,barley intercropped,absent
+poli__aphid,poli,aphid alone,14,rye,42,28,0.034,absent,0,barley intercropped,absent
+poli__aphid,poli,aphid alone,15,barley,43,29,0.042,absent,0,barley intercropped,absent
+poli__aphid,poli,aphid alone,15,wheat,44,9,0.052,absent,0,barley intercropped,absent
+poli__aphid,poli,aphid alone,15,rye,45,33,0.032,absent,0,barley intercropped,absent
+poli__aphid_garlic,poli_garlic,garlic,16,barley,46,5,0.028,present,0.46,barley intercropped,absent
+poli__aphid_garlic,poli_garlic,garlic,16,wheat,47,32,0.032,present,0.46,barley intercropped,absent
+poli__aphid_garlic,poli_garlic,garlic,16,rye,48,10,0.029,present,0.46,barley intercropped,absent
+poli__aphid_garlic,poli_garlic,garlic,17,barley,49,43,0.037,present,0.141,barley intercropped,absent
+poli__aphid_garlic,poli_garlic,garlic,17,wheat,50,45,0.049,present,0.141,barley intercropped,absent
+poli__aphid_garlic,poli_garlic,garlic,17,rye,51,39,0.032,present,0.141,barley intercropped,absent
+poli__aphid_garlic,poli_garlic,garlic,18,barley,52,57,0.045,present,0.3,barley intercropped,absent
+poli__aphid_garlic,poli_garlic,garlic,18,wheat,53,5,0.032,present,0.3,barley intercropped,absent
+poli__aphid_garlic,poli_garlic,garlic,18,rye,54,20,0.02,present,0.3,barley intercropped,absent
+poli__aphid_garlic,poli_garlic,garlic,19,barley,55,12,0.035,present,0.47,barley intercropped,absent
+poli__aphid_garlic,poli_garlic,garlic,19,wheat,56,7,0.032,present,0.47,barley intercropped,absent
+poli__aphid_garlic,poli_garlic,garlic,19,rye,57,15,0.036,present,0.47,barley intercropped,absent
+poli__aphid_garlic,poli_garlic,garlic,20,barley,58,31,0.044,present,0.5,barley intercropped,absent
+poli__aphid_garlic,poli_garlic,garlic,20,wheat,59,6,0.022,present,0.5,barley intercropped,absent
+poli__aphid_garlic,poli_garlic,garlic,20,rye,60,21,0.0269,present,0.5,barley intercropped,absent
+barley_mono_aphid_predator,mono_predator,predator,21,barley,61,3,0.021,absent,0,barley alone,present
+barley_mono_aphid_predator,mono_predator,predator,21,barley,62,22,0.034,absent,0,barley alone,present
+barley_mono_aphid_predator,mono_predator,predator,21,barley,63,22,0.054,absent,0,barley alone,present
+barley_mono_aphid_predator,mono_predator,predator,22,barley,64,21,0.036,absent,0,barley alone,present
+barley_mono_aphid_predator,mono_predator,predator,22,barley,65,7,0.03,absent,0,barley alone,present
+barley_mono_aphid_predator,mono_predator,predator,22,barley,66,2,0.011,absent,0,barley alone,present
+barley_mono_aphid_predator,mono_predator,predator,23,barley,67,2,0.02,absent,0,barley alone,present
+barley_mono_aphid_predator,mono_predator,predator,23,barley,68,3,0.027,absent,0,barley alone,present
+barley_mono_aphid_predator,mono_predator,predator,23,barley,69,22,0.038,absent,0,barley alone,present
+barley_mono_aphid_predator,mono_predator,predator,24,barley,70,5,0.028,absent,0,barley alone,present
+barley_mono_aphid_predator,mono_predator,predator,24,barley,71,17,0.032,absent,0,barley alone,present
+barley_mono_aphid_predator,mono_predator,predator,24,barley,72,17,0.032,absent,0,barley alone,present
+barley_mono_aphid_predator,mono_predator,predator,25,barley,73,19,0.042,absent,0,barley alone,present
+barley_mono_aphid_predator,mono_predator,predator,25,barley,74,10,0.031,absent,0,barley alone,present
+barley_mono_aphid_predator,mono_predator,predator,25,barley,75,22,0.039,absent,0,barley alone,present
+barley_mono_aphid_predator_garlic,mono_predator_garlic,predator + garlic,26,barley,76,8,0.04,present,0.569,barley alone,present
+barley_mono_aphid_predator_garlic,mono_predator_garlic,predator + garlic,26,barley,77,9,0.036,present,0.569,barley alone,present
+barley_mono_aphid_predator_garlic,mono_predator_garlic,predator + garlic,26,barley,78,8,0.034,present,0.569,barley alone,present
+barley_mono_aphid_predator_garlic,mono_predator_garlic,predator + garlic,27,barley,79,4,0.025,present,0.273,barley alone,present
+barley_mono_aphid_predator_garlic,mono_predator_garlic,predator + garlic,27,barley,80,5,0.029,present,0.273,barley alone,present
+barley_mono_aphid_predator_garlic,mono_predator_garlic,predator + garlic,27,barley,81,4,0.018,present,0.273,barley alone,present
+barley_mono_aphid_predator_garlic,mono_predator_garlic,predator + garlic,28,barley,82,11,0.041,present,0.609,barley alone,present
+barley_mono_aphid_predator_garlic,mono_predator_garlic,predator + garlic,28,barley,83,6,0.035,present,0.609,barley alone,present
+barley_mono_aphid_predator_garlic,mono_predator_garlic,predator + garlic,28,barley,84,20,0.05,present,0.609,barley alone,present
+barley_mono_aphid_predator_garlic,mono_predator_garlic,predator + garlic,29,barley,85,3,0.03,present,0.495,barley alone,present
+barley_mono_aphid_predator_garlic,mono_predator_garlic,predator + garlic,29,barley,86,17,0.044,present,0.495,barley alone,present
+barley_mono_aphid_predator_garlic,mono_predator_garlic,predator + garlic,29,barley,87,3,0.023,present,0.495,barley alone,present
+barley_mono_aphid_predator_garlic,mono_predator_garlic,predator + garlic,30,barley,88,4,0.024,present,0.214,barley alone,present
+barley_mono_aphid_predator_garlic,mono_predator_garlic,predator + garlic,30,barley,89,0,0.017,present,0.214,barley alone,present
+barley_mono_aphid_predator_garlic,mono_predator_garlic,predator + garlic,30,barley,90,2,0.022,present,0.214,barley alone,present
+poli__aphid_predator,poli_predator,predator,31,barley,91,11,0.031,absent,0,barley intercropped,present
+poli__aphid_predator,poli_predator,predator,31,wheat,92,4,0.029,absent,0,barley intercropped,present
+poli__aphid_predator,poli_predator,predator,31,rye,93,20,0.042,absent,0,barley intercropped,present
+poli__aphid_predator,poli_predator,predator,32,barley,94,3,0.022,absent,0,barley intercropped,present
+poli__aphid_predator,poli_predator,predator,32,wheat,95,11,0.032,absent,0,barley intercropped,present
+poli__aphid_predator,poli_predator,predator,32,rye,96,19,0.041,absent,0,barley intercropped,present
+poli__aphid_predator,poli_predator,predator,33,barley,97,11,0.035,absent,0,barley intercropped,present
+poli__aphid_predator,poli_predator,predator,33,wheat,98,21,0.045,absent,0,barley intercropped,present
+poli__aphid_predator,poli_predator,predator,33,rye,99,4,0.024,absent,0,barley intercropped,present
+poli__aphid_predator,poli_predator,predator,34,barley,100,34,0.063,absent,0,barley intercropped,present
+poli__aphid_predator,poli_predator,predator,34,wheat,101,21,0.041,absent,0,barley intercropped,present
+poli__aphid_predator,poli_predator,predator,34,rye,102,15,0.037,absent,0,barley intercropped,present
+poli__aphid_predator,poli_predator,predator,35,barley,103,25,0.047,absent,0,barley intercropped,present
+poli__aphid_predator,poli_predator,predator,35,wheat,104,21,0.049,absent,0,barley intercropped,present
+poli__aphid_predator,poli_predator,predator,35,rye,105,4,0.027,absent,0,barley intercropped,present
+poli__aphid_predator_garlic,poli_predator_garlic,predator + garlic,36,barley,106,7,0.034,present,0.312,barley intercropped,present
+poli__aphid_predator_garlic,poli_predator_garlic,predator + garlic,36,wheat,107,4,0.032,present,0.312,barley intercropped,present
+poli__aphid_predator_garlic,poli_predator_garlic,predator + garlic,36,rye,108,9,0.034,present,0.312,barley intercropped,present
+poli__aphid_predator_garlic,poli_predator_garlic,predator + garlic,37,barley,109,9,0.034,present,0.456,barley intercropped,present
+poli__aphid_predator_garlic,poli_predator_garlic,predator + garlic,37,wheat,110,26,0.054,present,0.456,barley intercropped,present
+poli__aphid_predator_garlic,poli_predator_garlic,predator + garlic,37,rye,111,14,0.034,present,0.456,barley intercropped,present
+poli__aphid_predator_garlic,poli_predator_garlic,predator + garlic,38,barley,112,15,0.039,present,0.406,barley intercropped,present
+poli__aphid_predator_garlic,poli_predator_garlic,predator + garlic,38,wheat,113,25,0.058,present,0.406,barley intercropped,present
+poli__aphid_predator_garlic,poli_predator_garlic,predator + garlic,38,rye,114,1,0.031,present,0.406,barley intercropped,present
+poli__aphid_predator_garlic,poli_predator_garlic,predator + garlic,39,barley,115,15,0.038,present,0.342,barley intercropped,present
+poli__aphid_predator_garlic,poli_predator_garlic,predator + garlic,39,wheat,116,2,0.03,present,0.342,barley intercropped,present
+poli__aphid_predator_garlic,poli_predator_garlic,predator + garlic,39,rye,117,4,0.033,present,0.342,barley intercropped,present
+poli__aphid_predator_garlic,poli_predator_garlic,predator + garlic,40,barley,118,6,0.031,present,0.391,barley intercropped,present
+poli__aphid_predator_garlic,poli_predator_garlic,predator + garlic,40,wheat,119,16,0.047,present,0.391,barley intercropped,present
+poli__aphid_predator_garlic,poli_predator_garlic,predator + garlic,40,rye,120,11,0.034,present,0.391,barley intercropped,present
