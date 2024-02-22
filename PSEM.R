@@ -115,7 +115,7 @@ SSQ/df.residual(mm2)
 library(MASS)
 
 mm2b <- glmmPQL(Aphid_Number ~ Hst_div + Plant_weight + Predtr  + 
-                    Garlic_weight, 
+                    Garlic_weight , 
                   random = ~ 1 | Pot,  data = k.dat,
                 family = "quasipoisson") 
   
@@ -532,3 +532,4 @@ ggplot(k.dat_fig_S1B, aes(y=mean, x=Plant)) +
 
 
 #End
+
