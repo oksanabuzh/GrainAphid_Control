@@ -1,17 +1,21 @@
-# 28 March 2023
+# Analysis
 
 rm(list=ls(all=TRUE))
 
 # Packages----
-library(here)
 library(tidyverse)
 library(ggplot2)
 library(lme4)
 library(lmerTest)
+library(MASS)
 library(car)
 library(emmeans)
-library(piecewiseSEM)
 library(multcomp)
+library(r2glmm)
+library(MuMIn)
+library(piecewiseSEM)
+library(sjPlot)
+
 
 
 sessionInfo()
@@ -23,24 +27,24 @@ sessionInfo()
 # [13] readr_2.1.4        tidyr_1.3.0        tibble_3.1.8       ggplot2_3.4.1      tidyverse_2.0.0   
 
 
-# local working directory
-path <- here::here()
-path
+set_theme(base = theme_bw(), axis.textsize.x = 1, axis.textsize.y = 1, axis.textcolor = "black",
+          axis.title.color = "black", axis.title.size = 1.4)
+
 
 # Data----
-library(tidyverse)
+#  library(tidyverse)
 k.dat<-read_csv ("Data/Aphid_Data.csv")
 str(k.dat) 
 names (k.dat)
-
 # check missing data
 which(is.na(k.dat))
 
 k.dat$Pot <- factor(k.dat$Pot)
 
 
+
 # Check the relationships
-library(ggplot2)
+# library(ggplot2)
 ggplot(k.dat, aes(Plant_weight,Aphid_Number)) + geom_point()
 ggplot(k.dat, aes(Predtr, Aphid_Number)) + geom_boxplot()
 ggplot(k.dat, aes(Hst_div, Aphid_Number)) + geom_boxplot()
@@ -50,16 +54,15 @@ ggplot(k.dat, aes(Garlic, Aphid_Number)) + geom_boxplot()
 
 # Mixed models----
 
-library(lme4)
-library(lmerTest)
-
 ## Plant weight------
 
 mm1 <- lmer(Plant_weight  ~ Hst_div + Garlic_weight +
               (1|Pot), data = k.dat)
+
 plot(mm1)
 qqnorm(resid(mm1))
 qqline(resid(mm1))
+
 
 # check multicolinearity
 car::vif(mm1)
@@ -69,10 +72,10 @@ summary(mm1)
 car::Anova(mm1)
 
 # Marginal means and pairwise differences of Hst_div levels
+# library(emmeans)
+# library(multcomp)
 emmeans::emmeans(mm1, list(pairwise ~ Hst_div))
 # to add letters for the post-hoc test:
-library(multcomp)
-library(emmeans)
 cld(emmeans(mm1, list(pairwise ~ Hst_div)),  
     #  type="response",
     Letters = letters, adjust = "none")
@@ -85,7 +88,8 @@ MuMIn::r.squaredGLMM(mm1)
 # R2m and R2c are marginal (for fixed predictors) and conditional (for fixed and random predictors) coefficients of determination
 
 # Partial R2 for fixed effects
-library(r2glmm)
+# library(r2glmm)
+
 R2part_mm1 <- r2beta(mm1, method = 'nsj', partial = T, data = k.dat)
 R2part_mm1
 
@@ -108,18 +112,39 @@ qqline(resid(mm2))
 
 resid_pearson <- residuals(mm2, type = "pearson")
 SSQ <- sum(resid_pearson^2)
-SSQ/df.residual(mm2) 
+SSQ/df.residual(mm2)
+
 # [1] 3.404141 -> clear overdispersion
 
-# change family
-library(MASS)
+### Distribution of the Aphid_Number ------
+# Aphid_Number is a count variable with the right-skewed distribution
+summary(k.dat$Aphid_Number)
+ks.test(k.dat$Aphid_Number,"pnorm")
 
+hist(k.dat$Aphid_Number, breaks = 50, freq=FALSE)
+plot(density(k.dat$Aphid_Number))
+
+mean(k.dat$Aphid_Number)
+var(k.dat$Aphid_Number)
+
+ks.test(k.dat$Aphid_Number,"ppois", lambda=mean(k.dat$Aphid_Number))
+data1 <- rpois(n=120, lambda=17.6)
+ks.test(data1, k.dat$Aphid_Number)
+
+# change family
+# library(MASS)
 mm2b <- glmmPQL(Aphid_Number ~ Hst_div + Plant_weight + Predtr  + 
                     Garlic_weight , 
                   random = ~ 1 | Pot,  data = k.dat,
                 family = "quasipoisson") 
-  
-plot(mm2b)
+
+PearsonResiduals <- resid(mm2b, type = "pearson")
+n_cases <- nrow(k.dat) # extract number of samples
+n_predictors <- length(fixef(mm2b)) + 1 # extract number of estimates (plus intercept)
+Overdispersion <- sum(PearsonResiduals^2) / (n_cases-n_predictors) # calculate overdispersion
+Overdispersion # The overdispersion has decreased and is no longer an issue.
+
+plot(mm2b) #  the plot exhibits a slight funnel shape, but not drastically, and thus indicates heteroscedasticity.
 qqnorm(resid(mm2b))
 qqline(resid(mm2b))
 
@@ -130,8 +155,13 @@ car::vif(mm2b)
 summary(mm2b)
 car::Anova(mm2b)
 
-# Marginal means and pairwise differences of Hst_div levels and of Predtr levels
+# try negative binomial for comparison of the results to the quasipoisson
+mm2_c <- glmer.nb(Aphid_Number ~ Hst_div + Plant_weight + Predtr  + 
+                    Garlic_weight + (1|Pot), data = k.dat) 
+plot(mm2_c)
+car::Anova(mm2_c)
 
+# Marginal means and pairwise differences of Hst_div levels and of Predtr levels
 emmeans::emmeans(mm2b, list(pairwise ~ Hst_div, 
                             pairwise ~ Predtr))
 # to add letters for post-hoc test:
@@ -168,18 +198,20 @@ R2
 
 library(ggplot2)
 
-col <- c("#57B1C9","#81C5AD","#DB9B99" , "#FFFF4B" )
-fill <- c("#B7DEE8","#AEDACA","#E6B9B8","#FFFFB9" )
+col <- c("#57B1C9","#81C5AD", "#FFFF4B", "#DB9B99" )
+fill <- c("#57B1C9","#81C5AD", "#FFFF4B", "#DB9B99" )
+
 
 ggplot(R2, aes(y=Rsq, x=Effect)) + 
-geom_bar(position="stack", stat="identity", colour = col, fill=fill)+
+geom_bar(position="stack", stat="identity", colour = "black", fill="#DCE6F2")+
   coord_flip() +
   #  ylab(bquote('Explained variance (partial R'^'2'*')'))+
   ylab(bquote('partial R'^'2'))+
   labs(x =element_blank()) +
    scale_x_discrete(labels= c( "Garlic mass",
-                               "Host mass",
-                               "Host 
+                               "Host-plant
+                               mass",
+                               "Host-plant 
                                intercropping",
                                "Predator
                                presence"))+
@@ -193,6 +225,7 @@ geom_bar(position="stack", stat="identity", colour = col, fill=fill)+
         axis.line = element_line(colour = "black"),
         axis.ticks =  element_line(colour = "black"),
         axis.ticks.y = element_blank())
+
 
 ###############################-
 
@@ -237,8 +270,110 @@ write_csv(unstdCoefs(psem_model), file="coefs.csv")
 
 
 #################################################-
+# Figure 3 -----
 
-# Figure 3 ----
+## Figure 3A----
+### Interactive effects  ----
+
+mS4 <- glmer.nb(Aphid_Number ~  Hst_div + 
+                  Plant_weight + Predtr  + Garlic + 
+                  Predtr:Plant_weight+
+                  Predtr:Hst_div +
+                  Predtr:Garlic +
+                  (1|Pot), data = k.dat) 
+
+
+library(performance)
+check_convergence(mS4)
+check_collinearity(mS4)
+
+plot(mS4)
+
+# estimates
+summary(mS4)
+car::Anova(mS4)
+write.csv(Anova(mS4),  file = "results/Table_S4.csv")
+
+
+# Plot "Plant_weight"
+
+
+plot_model(mS4,type = "pred", terms=c("Plant_weight[0.004:0.063, by=.001]", "Predtr"),   show.data=T,
+           title = "", line.size=1)
+
+pred_host_Pred <-get_model_data(mS4, type = "pred", 
+                                terms=c("Plant_weight[0.004:0.063, by=.001]", "Predtr"))
+colr=c("#FC4E07", "#00AFBB")
+
+ggplot(pred_host_Pred, aes(x, predicted)) +
+  geom_ribbon(aes(ymin = conf.low, ymax = conf.high), alpha = 0.2, 
+              data=as.data.frame(pred_host_Pred) %>%
+                filter(group_col=="absent"), fill="#FC4E07")+
+  geom_ribbon(aes(ymin = conf.low, ymax = conf.high), alpha = 0.2, 
+               data=as.data.frame(pred_host_Pred) %>%
+                filter(group_col=="present"), fill="#00AFBB")+
+  geom_point(data=k.dat, aes(Plant_weight, Aphid_Number, fill = Predtr),
+             size=2, alpha=0.6, pch=21)+
+  scale_fill_manual(values = colr)+  scale_color_manual(values="gray" , guide = 'none')  +  
+  labs(y='Aphid density', x="Host-plant mass, g", 
+       fill="Predator") +
+    geom_line(aes(x, predicted), data=as.data.frame(pred_host_Pred) %>%
+               filter(group_col=="present"), col="#00AFBC", size=1) +
+   geom_line(aes(x, predicted), data=as.data.frame(pred_host_Pred) %>%
+              filter(group_col=="absent"), col="#FC4E07", size=1) 
+ ## geom_line(aes(x, predicted), data=as.data.frame(pred_host_Pred),
+  #          col="black", size=1)
+
+
+
+
+## Figure 3B----
+# test the interaction of predator presence with garlic biomass
+
+mS5 <- glmer.nb(Aphid_Number ~ Hst_div + 
+                  Plant_weight + Predtr  + Garlic_weight + 
+                  Predtr:Plant_weight+
+                  Predtr:Hst_div +
+                  Predtr:Garlic_weight +  (1|Pot), data = k.dat) 
+
+check_convergence(mS5)
+
+# estimates
+summary(mS5)
+car::Anova(mS5)
+write.csv(Anova(mS5),  file = "results/Table_S5.csv")
+
+# Plot "Predtr:Garlic_weight"
+
+plot_model(mS5,type = "pred", terms=c("Garlic_weight[0:0.872, by=.001]", "Predtr"),   show.data=T,
+           title = "", line.size=1)
+
+pred_GarlWght_Pred <-get_model_data(mS5, type = "pred", 
+                                    terms=c("Garlic_weight[0:0.872, by=.001]", "Predtr"))
+colr=c("#FC4E07", "#00AFBB")
+
+ggplot(pred_GarlWght_Pred, aes(x, predicted)) +
+  geom_ribbon(aes(ymin = conf.low, ymax = conf.high), alpha = 0.1, 
+              data=as.data.frame(pred_GarlWght_Pred) %>%
+                filter(group_col=="present"), fill="#00AFBB")+
+  geom_ribbon(aes(ymin = conf.low, ymax = conf.high), alpha = 0.1, 
+              data=as.data.frame(pred_GarlWght_Pred) %>%
+                filter(group_col=="absent"), fill="#FC4E07")+
+  geom_point(data=k.dat, aes(Garlic_weight, Aphid_Number, fill = Predtr),
+             size=2, alpha=0.7, pch=21)+
+  scale_fill_manual(values = colr)+  scale_color_manual(values="gray" , guide = 'none')  +  
+  labs(y='Aphid density', x="Garlic mass, g", 
+       fill="Predator") +
+  geom_line(aes(x, predicted), data=as.data.frame(pred_GarlWght_Pred) %>%
+              filter(group_col=="present"), col="#00AFBC", size=1) +
+  geom_line(aes(x, predicted), data=as.data.frame(pred_GarlWght_Pred) %>%
+              filter(group_col=="absent"), col="#FC4E07", size=1) 
+
+
+
+#################################################-
+
+## Figure 3C ----
 ## effects of treatment
 k.dat$Treatment_specific
 
@@ -324,18 +459,149 @@ ggplot(fig1_summarized, aes(y=mean, x=Treatment_general, fill=Group), col="black
  
  # geom_point(data=fig1_emmeans, aes(y=emmean, x=Treatment_general),
  #            shape = 23, color = "black", fill="blue",  size=3) +
-  
+  ylim(0,33)+
   labs(x =" ", y="Aphid density") +
   scale_fill_brewer(palette="Pastel2") +
   theme_bw()+
-  theme(axis.text.y=element_text(colour = "black", size=13),
-        axis.text.x=element_text(colour = "black", size=13),
+  theme(axis.text.y=element_text(colour = "black", size=11),
+        axis.text.x=element_blank(),
         axis.title=element_text(size=15),
         axis.line = element_line(colour = "black"),
         axis.ticks =  element_line(colour = "black"),
         legend.position="none")
 
+#################################################-
+## Figure 3D ----
+### Combination of control agents----
 
+mS6 <- glmer.nb(Aphid_Number ~ Group +  (1|Pot), data = k.dat)
+
+check_convergence(mS6)
+# check_collinearity(mS6)
+plot(mS6)
+
+# estimates
+summary(mS6)
+car::Anova(mS6)
+
+
+# Marginal means and pairwise differences of Hst_div levels and of Predtr levels
+
+emmeans::emmeans(mS6, list(pairwise ~ Group))
+
+# Number_agents
+
+# to add letters for post-hoc test:
+fig_emmeans_S6 <- multcomp::cld(emmeans::emmeans(mS6, list(pairwise ~ Group)),  
+                                #  type="response",
+                                Letters = letters, adjust = "none")
+
+fig_emmeans_S6 <- fig_emmeans_S6[order(fig_emmeans_S6$Group),]
+fig_emmeans_S6
+
+
+figS6_summarized = k.dat %>% 
+  group_by(Group) %>% 
+  summarize(Max.Aphid_Number=max(Aphid_Number),
+            mean=mean(Aphid_Number),
+            sd=sd(Aphid_Number),
+            se = sd(Aphid_Number, na.rm = T)/sqrt(length(Aphid_Number))) 
+
+figS6_summarized
+
+
+ggplot(figS6_summarized, aes(y=mean, x=Group, fill=Group), col="black") + 
+  geom_bar(stat="identity", position=position_dodge(), col="black") +
+  geom_errorbar(aes(ymin=mean-se, ymax=mean+se), width=.2,
+                position=position_dodge(.9)) +
+  geom_text(data=figS6_summarized,aes(x=Group,y=1+mean+se,
+                                      label=c("a", "a", "b", "c")),vjust=0, size=5,
+            inherit.aes = TRUE , position = position_dodge(width = 0.9))+
+  ylim(0,31) + 
+  labs(x =" ", y="Aphid density") +
+  scale_fill_brewer(palette="Pastel2") +
+  theme_bw()+
+  theme(axis.text.y=element_text(colour = "black", size=11),
+        axis.text.x=element_blank(),
+        axis.title=element_text(size=15),
+        axis.line = element_line(colour = "black"),
+        axis.ticks =  element_line(colour = "black"),
+        legend.title=element_text(face="bold",size=11),
+        legend.text=element_text(size=11),
+        legend.position = "none")
+
+
+
+#################################################-
+## Figure 3E----
+### Host biomass as response variable  ----
+
+mod_host_mass <- lmer(Plant_weight  ~ Group +
+                        # Treatment_general +
+                        Hst_div + #Garlic +
+                        (1|Pot), data = k.dat)
+plot(mod_host_mass)
+qqnorm(resid(mod_host_mass))
+qqline(resid(mod_host_mass))
+
+# check multicolinearity
+car::vif(mod_host_mass)
+
+# estimates
+summary(mod_host_mass)
+car::Anova(mod_host_mass)
+
+# Marginal means and pairwise differences of Hst_div levels
+emmeans::emmeans(mod_host_mass, list(pairwise ~ Group),
+                 type="response", adjust = "Tukey")
+# to add letters for the post-hoc test:
+library(multcomp)
+library(emmeans)
+figS2_emmeans <- cld(emmeans(mod_host_mass, list(pairwise ~ Group)),  
+                     type="response",
+                     Letters = letters, adjust = "Tukey")
+
+figS2_emmeans <- figS2_emmeans[order(figS2_emmeans$Group), ]
+figS2_emmeans
+
+#  model R2
+MuMIn::r.squaredGLMM(mod_host_mass)
+# R2m and R2c are marginal (for fixed predictors) and conditional (for fixed and random predictors) coefficients of determination
+
+# Partial R2 for fixed effects
+library(r2glmm)
+R2part_mm1 <- r2beta(mod_host_mass, method = 'nsj', partial = T, data = k.dat)
+R2part_mm1
+
+figS2_summarized = k.dat %>% 
+  group_by(Group) %>% 
+  summarize(Max.host.nass=max(Plant_weight),
+            mean=mean(Plant_weight),
+            sd=sd(Plant_weight),
+            se = sd(Plant_weight, na.rm = T)/sqrt(length(Plant_weight))) 
+
+figS2_summarized
+
+
+ggplot(figS2_summarized, aes(y=mean, x=Group, fill=Group), col="black") + 
+  geom_bar(stat="identity", position=position_dodge(), col="black") +
+  geom_errorbar(aes(ymin=mean-se, ymax=mean+se), width=.2,
+                position=position_dodge(.9))+
+  geom_text(data=figS2_summarized,aes(x=Group,y=0.001+mean+se,
+                                      label=figS2_emmeans$.group),vjust=0, size=5)+
+  
+  # geom_point(data=fig1_emmeans, aes(y=emmean, x=Treatment_general),
+  #            shape = 23, color = "black", fill="blue",  size=3) +
+  
+  labs(x =" ", y="Host-plant mass, g") +
+  scale_fill_brewer(palette="Pastel2") +
+  theme_bw()+ ylim(0,0.04)+
+  theme(axis.text.y=element_text(colour = "black", size=11),
+        axis.text.x=element_blank(),
+        axis.title=element_text(size=15),
+        axis.line = element_line(colour = "black"),
+        axis.ticks =  element_line(colour = "black"),
+        legend.position="none")
 
 
 
@@ -414,6 +680,7 @@ car::vif(mS2)
 
 plot(mS2)
 qqnorm(resid(mS2))
+
 qqline(resid(mS2))
 
 # check overdispersion
@@ -484,52 +751,5 @@ ggplot(k.dat, aes(x=Plant,y=Aphid_Number)) +
 
 
 
-# Figure option by Julian
 
-k.dat_fig_S1B <- k.dat %>% 
-  group_by(Plant) %>% 
-  summarise(mean = mean(Aphid_Number, na.rm = T),
-            sd = sd(Aphid_Number, na.rm = T),
-            se = sd(Aphid_Number, na.rm = T)/sqrt(length(Aphid_Number)))
-
-
-k.dat_fig_S1B$group <- figS1B_emmeans$.group
-k.dat_fig_S1B$emmean <- figS1B_emmeans$emmean
-k.dat_fig_S1B$lower.CL <- figS1B_emmeans$lower.CL
-k.dat_fig_S1B$upper.CL <- figS1B_emmeans$upper.CL
-
-
-
-ggplot(k.dat_fig_S1B, aes(y=mean, x=Plant)) + 
-  geom_jitter(
-    data = k.dat,
-    aes(y = Aphid_Number, x = Plant),
-  #  shape = 16,
-    alpha = 0.2,
-    width = 0.2
-  ) +
-  geom_point(shape = 16, size=3) +
-  geom_pointrange(aes(ymin=mean-sd, ymax=mean+sd), fatten = 3)+
-  geom_point(aes(y=emmean, x=Plant), shape = 23, color = "black", fill="blue", , size=3) +
-     geom_text(
-    data = k.dat_fig_S1B,
-    aes(
-      y = mean,
-      x = Plant,
-      label = str_trim(group)
-    ),
-    position = position_nudge(x = 0.1),
-    hjust = 0,
-    color = "black"
-  ) +
-   labs(x ="Plant species", y="Aphid density") +
-  theme_bw()+
-  theme(axis.text.y=element_text(colour = "black", size=13),
-        axis.text.x=element_text(colour = "black", size=13),
-        axis.title=element_text(size=15),
-        axis.line = element_line(colour = "black"),
-        axis.ticks =  element_line(colour = "black"))
-
-
-#End
-
+#################################################-
