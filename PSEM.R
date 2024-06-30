@@ -15,7 +15,7 @@ library(r2glmm)
 library(MuMIn)
 library(piecewiseSEM)
 library(sjPlot)
-
+library(ggeffects)
 
 
 sessionInfo()
@@ -155,11 +155,78 @@ car::vif(mm2b)
 summary(mm2b)
 car::Anova(mm2b)
 
+
+
 # try negative binomial for comparison of the results to the quasipoisson
 mm2_c <- glmer.nb(Aphid_Number ~ Hst_div + Plant_weight + Predtr  + 
                     Garlic_weight + (1|Pot), data = k.dat) 
+
+getME(mm2_c, "glmer.nb.theta")
+
+
 plot(mm2_c)
 car::Anova(mm2_c)
+
+
+
+# Quasi-Poisson vs Negative binomial----
+
+k.dat$pred_qpoiss <- predict(mm2b, k.dat, type = "response",)  # ,level=0
+k.dat$resid_qpoiss <- residuals(mm2b)
+
+
+k.dat$pred_nb <- predict(mm2_c, k.dat, type = "response")
+k.dat$resid_nb <- residuals(mm2_c)
+
+
+
+new_dat <- k.dat %>% 
+  dplyr::select(Plant_N, pred_qpoiss,  resid_qpoiss,
+        pred_nb, resid_nb) %>% 
+   pivot_longer(cols=c(pred_qpoiss,  resid_qpoiss,
+                       pred_nb, resid_nb),
+                names_to = c("property", "familly"),
+                names_pattern = "(.*)_(.*)") %>% 
+  pivot_wider(names_from = property, values_from = value) %>% 
+  mutate(pred_groups   = cut_number(pred, n = 10)) %>% 
+  group_by(familly, pred_groups) %>% 
+  summarise(
+    count = n(),
+    mean=mean(pred),
+    sq_resid=mean(resid^2),
+    sum=sum(resid^2)) %>% 
+  ungroup()
+ 
+
+
+
+new_dat %>% 
+  mutate(familly= fct_recode(familly, "negative binomial"="nb", "quasi-Poisson"="qpoiss")) %>% 
+  ggplot(aes(mean, sum))+
+ # geom_smooth(aes(color=familly, fill=familly), method='lm', alpha=0.1, se = FALSE) +
+    geom_point(aes(color=familly, size=count, fill=familly), pch=21, alpha=0.6) +
+  labs(x="Predicted mean", y="Sum of Squared Residuals", colour="GLMM", fill="GLMM")+
+  guides(size = "none")+ theme(legend.key=element_blank())
+
+
+new_dat <- k.dat %>% 
+  dplyr::select(Plant_N, pred_qpoiss,  resid_qpoiss,
+                pred_nb, resid_nb) %>% 
+  pivot_longer(cols=c(pred_qpoiss,  resid_qpoiss,
+                      pred_nb, resid_nb),
+               names_to = c("property", "familly"),
+               names_pattern = "(.*)_(.*)") %>% 
+  pivot_wider(names_from = property, values_from = value) %>% 
+  mutate(sq_resid=resid^2)
+
+
+new_dat %>% 
+  mutate(familly= fct_recode(familly, "negative binomial"="nb", "quasi-Poisson"="qpoiss")) %>% 
+  ggplot(aes(pred, sq_resid))+
+  geom_smooth(aes(color=familly, fill=familly), method='lm', alpha=0.1, se = FALSE) +
+  geom_point(aes(color=familly, fill=familly), pch=21, alpha=0.6, size=2) +
+labs(x="Predicted mean", y="Squared residuals", colour="GLMM", fill="GLMM")+ theme(legend.key=element_blank())
+
 
 # Marginal means and pairwise differences of Hst_div levels and of Predtr levels
 emmeans::emmeans(mm2b, list(pairwise ~ Hst_div, 
@@ -208,9 +275,9 @@ geom_bar(position="stack", stat="identity", colour = "black", fill="#DCE6F2")+
   #  ylab(bquote('Explained variance (partial R'^'2'*')'))+
   ylab(bquote('partial R'^'2'))+
   labs(x =element_blank()) +
-   scale_x_discrete(labels= c( "Garlic mass",
+   scale_x_discrete(labels= c( "Garlic biomass",
                                "Host-plant
-                               mass",
+                               biomass",
                                "Host-plant 
                                intercropping",
                                "Predator
@@ -275,19 +342,23 @@ write_csv(unstdCoefs(psem_model), file="coefs.csv")
 ## Figure 3A----
 ### Interactive effects  ----
 
-mS4 <- glmer.nb(Aphid_Number ~  Hst_div + 
-                  Plant_weight + Predtr  + Garlic + 
-                  Predtr:Plant_weight+
-                  Predtr:Hst_div +
-                  Predtr:Garlic +
-                  (1|Pot), data = k.dat) 
+# glmmTMB for fitting quasipoisson
+# https://cran.r-project.org/web/packages/glmmTMB/vignettes/glmmTMB.pdf
+# https://stackoverflow.com/questions/75799875/glmm-with-quasi-poisson-distribution
+
+mS4 <- glmmTMB(Aphid_Number ~  Hst_div + 
+                 Plant_weight + Predtr  + Garlic + 
+                 Predtr:Plant_weight +
+                 Predtr:Hst_div +
+                 Predtr:Garlic + (1|Pot),
+        data=k.dat, family=nbinom1) # nbinom1 fits quasipoisson familly
+
+
 
 
 library(performance)
 check_convergence(mS4)
 check_collinearity(mS4)
-
-plot(mS4)
 
 # estimates
 summary(mS4)
@@ -295,27 +366,36 @@ car::Anova(mS4)
 write.csv(Anova(mS4),  file = "results/Table_S4.csv")
 
 
-# Plot "Plant_weight"
+# Plot "Plant_weight" interaction with predator
+
+mS4a <- glmmTMB(Aphid_Number ~   Hst_div + 
+                 Plant_weight + Predtr  + Garlic + 
+                 Predtr:Plant_weight +
+                 #  Predtr:Hst_div +
+                 #  Predtr:Garlic + 
+                 (1|Pot),
+               data=k.dat , # to include zero inflation use ziformula=~1
+               family=nbinom1) # nbinom1 fits quasipoisson
 
 
-plot_model(mS4,type = "pred", terms=c("Plant_weight[0.004:0.063, by=.001]", "Predtr"),   show.data=T,
+plot_model(mS4a,type = "pred", terms=c("Plant_weight[0.004:0.063, by=.001]", "Predtr"),   show.data=T,
            title = "", line.size=1)
 
-pred_host_Pred <-get_model_data(mS4, type = "pred", 
+pred_host_Pred <-get_model_data(mS4a, type = "pred", 
                                 terms=c("Plant_weight[0.004:0.063, by=.001]", "Predtr"))
 colr=c("#FC4E07", "#00AFBB")
 
 ggplot(pred_host_Pred, aes(x, predicted)) +
-  geom_ribbon(aes(ymin = conf.low, ymax = conf.high), alpha = 0.2, 
+  geom_ribbon(aes(ymin = conf.low, ymax = conf.high), alpha = 0.1, 
               data=as.data.frame(pred_host_Pred) %>%
                 filter(group_col=="absent"), fill="#FC4E07")+
-  geom_ribbon(aes(ymin = conf.low, ymax = conf.high), alpha = 0.2, 
+  geom_ribbon(aes(ymin = conf.low, ymax = conf.high), alpha = 0.1, 
                data=as.data.frame(pred_host_Pred) %>%
                 filter(group_col=="present"), fill="#00AFBB")+
   geom_point(data=k.dat, aes(Plant_weight, Aphid_Number, fill = Predtr),
              size=2, alpha=0.6, pch=21)+
   scale_fill_manual(values = colr)+  scale_color_manual(values="gray" , guide = 'none')  +  
-  labs(y='Aphid density', x="Host-plant mass, g", 
+  labs(y='Aphid density', x="Host-plant biomass, g", 
        fill="Predator") +
     geom_line(aes(x, predicted), data=as.data.frame(pred_host_Pred) %>%
                filter(group_col=="present"), col="#00AFBC", size=1) +
@@ -362,7 +442,7 @@ ggplot(pred_GarlWght_Pred, aes(x, predicted)) +
   geom_point(data=k.dat, aes(Garlic_weight, Aphid_Number, fill = Predtr),
              size=2, alpha=0.7, pch=21)+
   scale_fill_manual(values = colr)+  scale_color_manual(values="gray" , guide = 'none')  +  
-  labs(y='Aphid density', x="Garlic mass, g", 
+  labs(y='Aphid density', x="Garlic biomass, g", 
        fill="Predator") +
   geom_line(aes(x, predicted), data=as.data.frame(pred_GarlWght_Pred) %>%
               filter(group_col=="present"), col="#00AFBC", size=1) +
@@ -410,8 +490,7 @@ SSQ/df.residual(mm2)
 # change family
 library(MASS)
 
-mm3b <- glmmPQL(Aphid_Number ~ Treatment_general  + Plant_weight
-                , 
+mm3b <- glmmPQL(Aphid_Number ~ Treatment_general  + Plant_weight, 
                 random = ~ 1 | Pot,  data = k.dat,
                 family = "quasipoisson") 
 
@@ -593,7 +672,7 @@ ggplot(figS2_summarized, aes(y=mean, x=Group, fill=Group), col="black") +
   # geom_point(data=fig1_emmeans, aes(y=emmean, x=Treatment_general),
   #            shape = 23, color = "black", fill="blue",  size=3) +
   
-  labs(x =" ", y="Host-plant mass, g") +
+  labs(x =" ", y="Host-plant biomass, g") +
   scale_fill_brewer(palette="Pastel2") +
   theme_bw()+ ylim(0,0.04)+
   theme(axis.text.y=element_text(colour = "black", size=11),
@@ -654,7 +733,7 @@ ggplot(k.dat, aes(y=Plant_weight, x=Plant)) +
              position = position_nudge(x=-0.1),
              shape = 23, color = "black", fill="blue",  size=3) +
   
-  labs(x ="Plant species", y="Plant mass, g") +
+  labs(x ="Plant species", y="Plant biomass (g)") +
   ylim(0.01, 0.07)+
   theme_bw()+
   theme(axis.text.y=element_text(colour = "black", size=13),
@@ -668,7 +747,7 @@ ggplot(k.dat, aes(y=Plant_weight, x=Plant)) +
 ## Fig S1.B----
 # Effects of plant species on aphid density
 
-mS2 <- glmer(Aphid_Number ~ Plant +   Predtr  + 
+mS2 <- glmer(Aphid_Number ~  Plant +   Predtr  + 
                Garlic_weight + (1|Pot), data = k.dat, 
              family = "poisson") 
 # check model
@@ -740,7 +819,7 @@ ggplot(k.dat, aes(x=Plant,y=Aphid_Number)) +
              position = position_nudge(x=-0.1),
              shape = 23, color = "black", fill="blue",  size=3) +
   
-  labs(x ="Plant species", y="Aphid density") +
+  labs(x ="Plant species", y="Aphid density (number)") +
   ylim(0, 65)+
     theme_bw()+
   theme(axis.text.y=element_text(colour = "black", size=13),
@@ -749,6 +828,71 @@ ggplot(k.dat, aes(x=Plant,y=Aphid_Number)) +
         axis.line = element_line(colour = "black"),
         axis.ticks =  element_line(colour = "black"))
 
+
+##Fig S1.C ----------
+
+# Effects of plant species on aphid density/host biomass
+
+k.dat <- k.dat %>% 
+  mutate(Aphid_load=Aphid_Number/Plant_weight)
+
+mS3 <- lmer(sqrt(Aphid_load) ~ Plant +   Predtr  + 
+               Garlic_weight + (1|Pot), data = k.dat) 
+# check model
+summary(mS3)
+
+
+# check multicolinearity
+car::vif(mS3)
+
+plot(mS3)
+qqnorm(resid(mS3))
+
+qqline(resid(mS3))
+
+
+car::Anova(mS3)
+
+# Marginal means and pairwise differences of Plant species
+emmeans::emmeans(mS3, list(pairwise ~ Plant))
+
+figS1C_emmeans <- multcomp::cld(emmeans::emmeans(mS3, list(pairwise ~ Plant)),  
+                                #  type="response",
+                                Letters = letters, adjust = "none")
+
+figS1C_emmeans <- figS1C_emmeans[order(figS1C_emmeans$Plant), ]
+figS1C_emmeans
+
+
+figS1C.summarized = k.dat %>% 
+  group_by(Plant) %>% 
+  summarize(Max.Aphid_load=max(sqrt(Aphid_load)),
+            Mean.Aphid_load=mean(sqrt(Aphid_load)))
+
+
+
+
+ggplot(k.dat, aes(x=Plant,y=sqrt(Aphid_load))) + 
+  geom_boxplot(outlier.shape=NA)+
+  geom_text(data=figS1C.summarized,aes(x=Plant,y=c(1550, 1260, 1100),
+                                       label=figS1C_emmeans$.group),vjust=0, , size=5)+
+  geom_jitter(data = k.dat, aes(y = Aphid_load, x = Plant),
+              alpha = 0.2,width = 0.2) +
+  geom_point(data=figS1C.summarized, aes(y=Mean.Aphid_load, x=Plant), 
+             position = position_nudge(x=0.1),
+             shape = 23, color = "black", fill="red", , size=3) +
+  geom_point(data=figS1C_emmeans, aes(y=emmean, x=Plant), 
+             position = position_nudge(x=-0.1),
+             shape = 23, color = "black", fill="blue",  size=3) +
+  
+  labs(x ="Plant species", y="Aphid load (number/g)") +
+#  ylim(0, 65)+
+  theme_bw()+
+  theme(axis.text.y=element_text(colour = "black", size=13),
+        axis.text.x=element_text(colour = "black", size=13),
+        axis.title=element_text(size=15),
+        axis.line = element_line(colour = "black"),
+        axis.ticks =  element_line(colour = "black"))
 
 
 
