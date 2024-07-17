@@ -1,4 +1,9 @@
-# Analysis
+# Purpose: Analysis for
+
+# Zeller, J.W., Khudr, M.S., Fylypchuk T.V., Bahlei O.V., Buzhdygan O.Y
+# Simultaneous top–down and bottom–up control of cereal aphids by predation, companion planting and host‐plant diversity
+# 2024
+# Annals of Applied Biology
 
 rm(list=ls(all=TRUE))
 
@@ -32,19 +37,16 @@ set_theme(base = theme_bw(), axis.textsize.x = 1, axis.textsize.y = 1, axis.text
 
 
 # Data----
-#  library(tidyverse)
-k.dat<-read_csv ("Data/Aphid_Data.csv")
+k.dat<-read_csv ("Data/Aphid_Data.csv") %>% 
+  mutate(Pot=factor(Pot))
+
 str(k.dat) 
 names (k.dat)
+
 # check missing data
 which(is.na(k.dat))
 
-k.dat$Pot <- factor(k.dat$Pot)
-
-
-
 # Check the relationships
-# library(ggplot2)
 ggplot(k.dat, aes(Plant_weight,Aphid_Number)) + geom_point()
 ggplot(k.dat, aes(Predtr, Aphid_Number)) + geom_boxplot()
 ggplot(k.dat, aes(Hst_div, Aphid_Number)) + geom_boxplot()
@@ -155,9 +157,8 @@ car::vif(mm2b)
 summary(mm2b)
 car::Anova(mm2b)
 
+# Comparison of Quasi-Poisson vs Negative binomial----
 
-
-# try negative binomial for comparison of the results to the quasipoisson
 mm2_c <- glmer.nb(Aphid_Number ~ Hst_div + Plant_weight + Predtr  + 
                     Garlic_weight + (1|Pot), data = k.dat) 
 
@@ -167,18 +168,12 @@ getME(mm2_c, "glmer.nb.theta")
 plot(mm2_c)
 car::Anova(mm2_c)
 
-
-
-# Quasi-Poisson vs Negative binomial----
-
 k.dat$pred_qpoiss <- predict(mm2b, k.dat, type = "response",)  # ,level=0
 k.dat$resid_qpoiss <- residuals(mm2b)
 
 
 k.dat$pred_nb <- predict(mm2_c, k.dat, type = "response")
 k.dat$resid_nb <- residuals(mm2_c)
-
-
 
 new_dat <- k.dat %>% 
   dplyr::select(Plant_N, pred_qpoiss,  resid_qpoiss,
@@ -197,9 +192,7 @@ new_dat <- k.dat %>%
     sum=sum(resid^2)) %>% 
   ungroup()
  
-
-
-
+# Fig. S5 a
 new_dat %>% 
   mutate(familly= fct_recode(familly, "negative binomial"="nb", "quasi-Poisson"="qpoiss")) %>% 
   ggplot(aes(mean, sum))+
@@ -209,7 +202,7 @@ new_dat %>%
   guides(size = "none")+ theme(legend.key=element_blank())
 
 
-new_dat <- k.dat %>% 
+new_dat_2 <- k.dat %>% 
   dplyr::select(Plant_N, pred_qpoiss,  resid_qpoiss,
                 pred_nb, resid_nb) %>% 
   pivot_longer(cols=c(pred_qpoiss,  resid_qpoiss,
@@ -219,8 +212,8 @@ new_dat <- k.dat %>%
   pivot_wider(names_from = property, values_from = value) %>% 
   mutate(sq_resid=resid^2)
 
-
-new_dat %>% 
+# Fig. S5b
+new_dat_2  %>% 
   mutate(familly= fct_recode(familly, "negative binomial"="nb", "quasi-Poisson"="qpoiss")) %>% 
   ggplot(aes(pred, sq_resid))+
   geom_smooth(aes(color=familly, fill=familly), method='lm', alpha=0.1, se = FALSE) +
@@ -263,11 +256,9 @@ R2<- R2part %>%
                            
 R2
 
-library(ggplot2)
+# Figure 2 B
 
 col <- c("#57B1C9","#81C5AD", "#FFFF4B", "#DB9B99" )
-fill <- c("#57B1C9","#81C5AD", "#FFFF4B", "#DB9B99" )
-
 
 ggplot(R2, aes(y=Rsq, x=Effect)) + 
 geom_bar(position="stack", stat="identity", colour = "black", fill="#DCE6F2")+
@@ -296,7 +287,7 @@ geom_bar(position="stack", stat="identity", colour = "black", fill="#DCE6F2")+
 
 ###############################-
 
-# Structural equation model:----
+# Structural equation model ----
 library(piecewiseSEM)
 psem_model <- psem (mm1, mm2b)
 
@@ -309,8 +300,6 @@ dSep(psem_model, .progressBar = FALSE)
 
 # Fisher’s C statistic
 fisherC(psem_model)
-# χ2 statistic
-# LLchisq(psem_model) # χ2 statistic can not be calculated, we rely on Fisher’s C
 
 # sample size
 nrow(k.dat)
@@ -320,20 +309,11 @@ unstdCoefs(psem_model)
 # model R2
 rsquared(psem_model)
 
-# summary( psem_model,  standardize = "none", .progressBar = FALSE)
-
-# standardized coefficients are not returned
-# Family (or link) function not supported, e.g. for quasipoisson 
-
-coefs(psem_model, standardize = "scale", standardize.type = "latent.linear") # default
-coefs(psem_model, standardize = "scale", standardize.type = "Menard.OE")
-coefs(psem_model, standardize = "range")
-
 #relying on unstandardized coefficients:
 coefs(psem_model,  standardize = "none")
 
-path
-write_csv(unstdCoefs(psem_model), file="coefs.csv")
+
+# write_csv(unstdCoefs(psem_model), file="coefs.csv")
 
 
 #################################################-
@@ -341,30 +321,25 @@ write_csv(unstdCoefs(psem_model), file="coefs.csv")
 
 ## Figure 3A----
 ### Interactive effects  ----
-
-# glmmTMB for fitting quasipoisson
-# https://cran.r-project.org/web/packages/glmmTMB/vignettes/glmmTMB.pdf
-# https://stackoverflow.com/questions/75799875/glmm-with-quasi-poisson-distribution
+library(glmmTMB)
 
 mS4 <- glmmTMB(Aphid_Number ~  Hst_div + 
                  Plant_weight + Predtr  + Garlic + 
                  Predtr:Plant_weight +
                  Predtr:Hst_div +
                  Predtr:Garlic + (1|Pot),
-        data=k.dat, family=nbinom1) # nbinom1 fits quasipoisson familly
+        data=k.dat, family=nbinom1) # nbinom1 fits quasipoisson family
 
 
 
 
 library(performance)
 check_convergence(mS4)
-check_collinearity(mS4)
 
 # estimates
 summary(mS4)
 car::Anova(mS4)
-write.csv(Anova(mS4),  file = "results/Table_S4.csv")
-
+# write.csv(Anova(mS4),  file = "results/Table_S4.csv")
 
 # Plot "Plant_weight" interaction with predator
 
@@ -403,8 +378,6 @@ ggplot(pred_host_Pred, aes(x, predicted)) +
               filter(group_col=="absent"), col="#FC4E07", size=1) 
  ## geom_line(aes(x, predicted), data=as.data.frame(pred_host_Pred),
   #          col="black", size=1)
-
-
 
 
 ## Figure 3B----
@@ -449,9 +422,6 @@ ggplot(pred_GarlWght_Pred, aes(x, predicted)) +
   geom_line(aes(x, predicted), data=as.data.frame(pred_GarlWght_Pred) %>%
               filter(group_col=="absent"), col="#FC4E07", size=1) 
 
-
-
-#################################################-
 
 ## Figure 3C ----
 ## effects of treatment
@@ -507,7 +477,7 @@ car::Anova(mm3b)
 
 # Marginal means and pairwise differences of Hst_div levels and of Predtr levels
 
-emmeans::emmeans(mm3b, list(pairwise ~ Treatment_general  ))
+emmeans::emmeans(mm3b, list(pairwise ~ Treatment_general))
 # to add letters for post-hoc test:
 fig1_emmeans <-multcomp::cld(emmeans::emmeans(mm3b, list(pairwise ~ Treatment_general)),  
               #  type="response",
@@ -517,8 +487,6 @@ fig1_emmeans <-multcomp::cld(emmeans::emmeans(mm3b, list(pairwise ~ Treatment_ge
 fig1_emmeans <- fig1_emmeans[order(fig1_emmeans$Treatment_general), ]
 fig1_emmeans
 
-
-
 fig1_summarized = k.dat %>% 
   group_by(Treatment_general, Group) %>% 
   summarize(Max.Aphid_Number=max(Aphid_Number),
@@ -527,7 +495,6 @@ fig1_summarized = k.dat %>%
             se = sd(Aphid_Number, na.rm = T)/sqrt(length(Aphid_Number))) 
 
 fig1_summarized
-
 
 ggplot(fig1_summarized, aes(y=mean, x=Treatment_general, fill=Group), col="black") + 
   geom_bar(stat="identity", position=position_dodge(), col="black") +
@@ -549,13 +516,15 @@ ggplot(fig1_summarized, aes(y=mean, x=Treatment_general, fill=Group), col="black
         axis.ticks =  element_line(colour = "black"),
         legend.position="none")
 
-#################################################-
+
+
 ## Figure 3D ----
 ### Combination of control agents----
 
 mS6 <- glmer.nb(Aphid_Number ~ Group +  (1|Pot), data = k.dat)
 
 check_convergence(mS6)
+
 # check_collinearity(mS6)
 plot(mS6)
 
@@ -611,7 +580,7 @@ ggplot(figS6_summarized, aes(y=mean, x=Group, fill=Group), col="black") +
 
 
 
-#################################################-
+
 ## Figure 3E----
 ### Host biomass as response variable  ----
 
@@ -681,10 +650,6 @@ ggplot(figS2_summarized, aes(y=mean, x=Group, fill=Group), col="black") +
         axis.line = element_line(colour = "black"),
         axis.ticks =  element_line(colour = "black"),
         legend.position="none")
-
-
-
-
 
 
 #################################################-
@@ -847,9 +812,7 @@ car::vif(mS3)
 
 plot(mS3)
 qqnorm(resid(mS3))
-
 qqline(resid(mS3))
-
 
 car::Anova(mS3)
 
@@ -868,8 +831,6 @@ figS1C.summarized = k.dat %>%
   group_by(Plant) %>% 
   summarize(Max.Aphid_load=max(sqrt(Aphid_load)),
             Mean.Aphid_load=mean(sqrt(Aphid_load)))
-
-
 
 
 ggplot(k.dat, aes(x=Plant,y=sqrt(Aphid_load))) + 
@@ -896,4 +857,3 @@ ggplot(k.dat, aes(x=Plant,y=sqrt(Aphid_load))) +
 
 
 
-#################################################-
