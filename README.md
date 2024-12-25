@@ -1,6 +1,6 @@
 # Simultaneous application of aphid predator and companion planting with garlic for the natural control of cereal aphid populations on grain crops
 
-R code and data for statistical analysis in Zeller, J.W., Khudr, M.S., Fylypchuk T.V., Bahlei O.V., Buzhdygan O.Y (2024) Simultaneous top–down and bottom–up control of cereal aphids by predation, companion planting and host‐plant diversity. Annals of Applied Biology [![DOI](10.1111/aab.12933)](https://doi.org/10.1111/aab.12933)
+R code and data for statistical analysis in Zeller, J.W., Khudr, M.S., Fylypchuk T.V., Bahlei O.V., Buzhdygan O.Y (2024) Simultaneous top–down and bottom–up control of cereal aphids by predation, companion planting and host‐plant diversity. Annals of Applied Biology [DOI10.1111/aab.12933](https://doi.org/10.1111/aab.12933)
 
 # Cite the code [![DOI](https://zenodo.org/badge/610212164.svg)](https://zenodo.org/doi/10.5281/zenodo.12770320)
  
